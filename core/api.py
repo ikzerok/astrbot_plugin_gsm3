@@ -69,9 +69,14 @@ class GSM3Client:
         return instances, None
 
     async def find_instances(self, keyword: str) -> tuple[list | None, str | None]:
-        """按关键字查找实例：先精确匹配 ID，再按名称模糊匹配。"""
+        """按关键字查找实例：先精确匹配 ID，再按名称模糊匹配。
+
+        兼容用户输入时用双引号/单引号包裹实例名（如 /gsm stop "泰拉瑞亚"），
+        匹配前会去掉首尾引号。
+        """
         if not keyword:
             return None, "请提供实例名称或 ID"
+        keyword = keyword.strip().strip('"').strip("'").strip("“”")
         instances, err = await self.list_instances()
         if err:
             return None, err

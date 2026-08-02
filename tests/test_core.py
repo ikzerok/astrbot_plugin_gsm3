@@ -52,6 +52,24 @@ class TestFindInstances:
         assert len(found) == 2
 
     @pytest.mark.asyncio
+    async def test_fuzzy_name_with_quotes(self, monkeypatch):
+        """带双引号/中文引号/单引号包裹的实例名应能正常匹配"""
+        instances = [
+            {"id": "abc-123", "name": "泰拉瑞亚", "status": "stopped"},
+            {"id": "def-456", "name": "龙之冒险", "status": "running"},
+        ]
+        client = GSM3Client("http://127.0.0.1:3001", "test-key")
+
+        async def fake_list():
+            return instances, None
+
+        monkeypatch.setattr(client, "list_instances", fake_list)
+        for kw in ['"泰拉瑞亚"', "“泰拉瑞亚”", "'泰拉瑞亚'", '"泰拉瑞亚" ']:
+            found, err = await client.find_instances(kw)
+            assert err is None
+            assert found == [instances[0]], f"keyword={kw!r} 匹配失败"
+
+    @pytest.mark.asyncio
     async def test_not_found(self, monkeypatch):
         client = GSM3Client("http://127.0.0.1:3001", "test-key")
 
