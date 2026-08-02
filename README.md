@@ -2,7 +2,7 @@
 
 ![logo](logo.png)
 
-[![Version](https://img.shields.io/badge/Version-v1.2.0-1D80D9?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.3.0-1D80D9?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-97CA00?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![AstrBot](https://img.shields.io/badge/AstrBot-Compatible-00BFA5?style=flat-square&logo=robot&logoColor=white)](https://github.com/AstrBotDevs/AstrBot)
@@ -11,6 +11,7 @@ AstrBot 插件：管理 [GSManager3](https://github.com/nichacker/GSManager3) �
 
 ## 功能
 
+- `/gsm help` — 显示全部指令帮助
 - `/gsm list` — 列出所有实例及运行状态
 - `/gsm status [名称/ID]` — 查看实例详情（不填参数则列出全部）
 - `/gsm start <名称/ID>` — 启动实例

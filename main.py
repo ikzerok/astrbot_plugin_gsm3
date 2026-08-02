@@ -12,7 +12,7 @@ from astrbot.core.star.filter.command import GreedyStr
 from .core import ACTION_MAP, STATUS_ICON, GSM3Client
 
 PLUGIN_NAME = "gsm3_manager"
-PLUGIN_VERSION = "1.2.0"
+PLUGIN_VERSION = "1.3.0"
 
 
 @register(
@@ -41,6 +41,24 @@ class Gsm3Plugin(Star):
     def gsm(self):
         """GSM3 游戏服务器管理"""
         pass
+
+    # /gsm help —— 显示帮助信息
+    @gsm.command("help")
+    async def gsm_help(self, event: AstrMessageEvent):
+        lines = [
+            "🎮 GSM3 服务器管理",
+            "",
+            "/gsm help — 显示本帮助",
+            "/gsm list — 列出所有实例及状态",
+            "/gsm status <名称/ID> — 查看实例详情",
+            "/gsm start <名称/ID> — 启动实例",
+            "/gsm stop <名称/ID> — 停止实例",
+            "/gsm restart <名称/ID> — 重启实例",
+            "/gsm action <名称/ID> <start|stop|restart> — 底层操作接口",
+            "",
+            "实例名支持模糊匹配，例如 /gsm stop 泰拉瑞亚",
+        ]
+        yield event.plain_result("\n".join(lines))
 
     # /gsm list —— 列出所有实例及状态
     @gsm.command("list")
