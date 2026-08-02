@@ -12,7 +12,7 @@ from astrbot.core.star.filter.command import GreedyStr
 from .core import ACTION_MAP, STATUS_ICON, GSM3Client
 
 PLUGIN_NAME = "gsm3_manager"
-PLUGIN_VERSION = "1.3.2"
+PLUGIN_VERSION = "1.3.3"
 
 
 @register(
