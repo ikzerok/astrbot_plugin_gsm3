@@ -2,7 +2,7 @@
 
 ![logo](logo.png)
 
-[![Version](https://img.shields.io/badge/Version-v1.3.1-1D80D9?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.3.2-1D80D9?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-97CA00?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![AstrBot](https://img.shields.io/badge/AstrBot-Compatible-00BFA5?style=flat-square&logo=robot&logoColor=white)](https://github.com/AstrBotDevs/AstrBot)
