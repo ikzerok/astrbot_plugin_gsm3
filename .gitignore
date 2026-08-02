@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 venv/
 .ruff_cache/
+.pytest_cache/
 
 # 编辑器
 .vscode/
