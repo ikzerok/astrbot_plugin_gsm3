@@ -73,7 +73,7 @@ class Gsm3Plugin(Star):
         lines = [f"共 {len(instances)} 个实例："]
         for inst in instances:
             status = STATUS_ICON.get(inst.get("status"), inst.get("status", "未知"))
-            lines.append(f"• {inst.get('name', '未知')} — {status}")
+            lines.append(f'• "{inst.get("name", "未知")}" — {status}')
         lines.append("")
         lines.append(
             '使用 /gsm status <"名称"> 查看详情，/gsm start|stop|restart <"名称"> 控制实例。'

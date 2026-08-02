@@ -106,7 +106,7 @@ class GSM3Client:
         """格式化单个实例为可读文本"""
         status = STATUS_ICON.get(inst.get("status"), inst.get("status", "未知"))
         lines = [
-            f"📦 {inst.get('name', '未知')}",
+            f'📦 "{inst.get("name", "未知")}"',
             f"  状态: {status}",
             f"  类型: {inst.get('instanceType', '未知')}",
         ]
