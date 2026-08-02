@@ -2,6 +2,11 @@ name: gsm3_manager
 display_name: GSM3 服务器管理
 desc: 管理 GSM3 (GSManager3) 上的游戏服务器实例 - 查看状态、启动、停止、重启
 help: /gsm help 查看帮助; /gsm list 查看所有实例; /gsm status <"名称"> 查看详情; /gsm start|stop|restart <"名称"> 控制实例; /gsm action <"名称"> <start|stop|restart>
-version: v1.3.3
+version: v1.3.4
 author: ikzerok
 repo: https://github.com/ikzerok/astrbot_plugin_gsm3
+category: 工具
+tags:
+  - 游戏
+  - 服务器管理
+  - GSManager3
