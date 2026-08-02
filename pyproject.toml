@@ -1,3 +1,13 @@
+[project]
+name = "astrbot-plugin-gsm3"
+version = "1.1.0"
+description = "AstrBot 插件：管理 GSManager3 游戏服务器面板实例（查看状态、启动、停止、重启）"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.24",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -6,3 +16,6 @@ target-version = "py310"
 # BLE001: 网络层需要兜底捕获一切异常防止插件崩溃，属于有意为之
 # PIE790: AstrBot 指令组函数需要保留 pass 占位
 ignore = ["BLE001", "PIE790"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

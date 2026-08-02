@@ -1,104 +1,39 @@
-from datetime import datetime, timedelta, timezone
+"""
+GSM3 服务器管理 - AstrBot 插件
 
-import httpx
+管理 GSManager3 游戏服务器面板上的实例：查看状态、启动、停止、重启。
+"""
+
 from astrbot.api import AstrBotConfig, logger
 from astrbot.api.event import AstrMessageEvent, filter
-from astrbot.api.star import Context, Star
+from astrbot.api.star import Context, Star, register
 from astrbot.core.star.filter.command import GreedyStr
 
-BJT = timezone(timedelta(hours=8))  # 北京时间
+from .core import ACTION_MAP, STATUS_ICON, GSM3Client
 
-STATUS_ICON = {
-    "running": "🟢 运行中",
-    "starting": "🟡 启动中",
-    "stopping": "🟠 停止中",
-    "stopped": "⚫ 已停止",
-}
-
-ACTION_MAP = {
-    "start": ("启动", "POST", "/api/external/instances/{id}/start"),
-    "stop": ("停止", "POST", "/api/external/instances/{id}/stop"),
-    "restart": ("重启", "POST", "/api/external/instances/{id}/restart"),
-}
+PLUGIN_NAME = "gsm3_manager"
+PLUGIN_VERSION = "1.1.0"
 
 
-def _fmt_time(iso_str: str) -> str:
-    """ISO 时间转北京时间，失败返回 '未知'"""
-    if not iso_str:
-        return "未知"
-    try:
-        t = datetime.fromisoformat(iso_str.replace("Z", "+00:00")).astimezone(BJT)
-        return t.strftime("%m-%d %H:%M")
-    except (ValueError, TypeError):
-        return "未知"
-
-
+@register(
+    PLUGIN_NAME,
+    "ikzerok",
+    "管理 GSM3 (GSManager3) 上的游戏服务器实例 - 查看状态、启动、停止、重启",
+    PLUGIN_VERSION,
+    "https://github.com/ikzerok/astrbot_plugin_gsm3",
+)
 class Gsm3Plugin(Star):
-    def __init__(self, context: Context, config: AstrBotConfig):
+    """GSM3 游戏服务器管理插件"""
+
+    def __init__(self, context: Context, config: AstrBotConfig = None):
         super().__init__(context)
         self.config = config
-        self.base_url = (config.get("base_url") or "http://127.0.0.1:3001").rstrip("/")
-        self.api_key = config.get("api_key") or ""
-        self.timeout = config.get("timeout") or 10
-
-    # ─────────────── API 基础 ───────────────
-
-    async def _request(self, method: str, path: str, **kwargs) -> dict:
-        """统一请求封装，带 Bearer 认证。任何异常都返回错误字典，不让插件崩溃。"""
-        if not self.api_key:
-            return {"success": False, "message": "未配置 API Key，请在插件配置中填写"}
-        headers = {"Authorization": f"Bearer {self.api_key}"}
-        url = f"{self.base_url}{path}"
-        try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                resp = await client.request(method, url, headers=headers, **kwargs)
-                resp.raise_for_status()
-                return resp.json()
-        except httpx.HTTPStatusError as e:
-            return {
-                "success": False,
-                "message": f"HTTP {e.response.status_code}: {e.response.text[:200]}",
-            }
-        except httpx.HTTPError as e:
-            return {"success": False, "message": f"请求失败: {type(e).__name__}: {e}"}
-        except Exception as e:
-            return {"success": False, "message": f"未知错误: {type(e).__name__}: {e}"}
-
-    async def _list_instances(self) -> tuple[list | None, str | None]:
-        """拉取全部实例。成功返回 (实例列表, None)，失败返回 (None, 错误信息)。"""
-        data = await self._request("GET", "/api/external/instances")
-        if not data.get("success"):
-            return None, data.get("message", "API 请求失败")
-        return data.get("data", []), None
-
-    async def _find_instances(self, keyword: str) -> tuple[list | None, str | None]:
-        """按关键字查找实例：先精确匹配 ID，再按名称模糊匹配。"""
-        if not keyword:
-            return None, "请提供实例名称或 ID"
-        instances, err = await self._list_instances()
-        if err:
-            return None, err
-        exact = [i for i in instances if i.get("id") == keyword]
-        if exact:
-            return exact, None
-        fuzzy = [i for i in instances if keyword.lower() in i.get("name", "").lower()]
-        return fuzzy, None
-
-    def _fmt_instance(self, inst: dict) -> str:
-        """格式化单个实例为可读文本"""
-        status = STATUS_ICON.get(inst.get("status"), inst.get("status", "未知"))
-        lines = [
-            f"📦 {inst.get('name', '未知')}",
-            f"  状态: {status}",
-            f"  类型: {inst.get('instanceType', '未知')}",
-        ]
-        if inst.get("lastStarted"):
-            lines.append(f"  上次启动: {_fmt_time(inst['lastStarted'])}")
-        if inst.get("lastStopped"):
-            lines.append(f"  上次停止: {_fmt_time(inst['lastStopped'])}")
-        if inst.get("workingDirectory"):
-            lines.append(f"  目录: {inst.get('workingDirectory')}")
-        return "\n".join(lines)
+        self.client = GSM3Client(
+            base_url=config.get("base_url") or "http://127.0.0.1:3001",
+            api_key=config.get("api_key") or "",
+            timeout=config.get("timeout") or 10,
+        )
+        logger.info(f"GSM3 插件初始化完成: {self.client.base_url}")
 
     # ─────────────── 指令组 ───────────────
 
@@ -110,7 +45,7 @@ class Gsm3Plugin(Star):
     # /gsm list —— 列出所有实例及状态
     @gsm.command("list")
     async def gsm_list(self, event: AstrMessageEvent):
-        instances, err = await self._list_instances()
+        instances, err = await self.client.list_instances()
         if err:
             yield event.plain_result(f"❌ {err}")
             return
@@ -129,11 +64,10 @@ class Gsm3Plugin(Star):
     @gsm.command("status")
     async def gsm_status(self, event: AstrMessageEvent, name: str = ""):
         if not name:
-            # 复用 list 逻辑
-            for result in self.gsm_list(event):
+            async for result in self.gsm_list(event):
                 yield result
             return
-        found, err = await self._find_instances(name)
+        found, err = await self.client.find_instances(name)
         if err:
             yield event.plain_result(f"❌ {err}")
             return
@@ -144,7 +78,7 @@ class Gsm3Plugin(Star):
             names = "、".join(i.get("name", "?") for i in found)
             yield event.plain_result(f"匹配到多个实例（{names}），请用更精确的名称或实例 ID。")
             return
-        yield event.plain_result(self._fmt_instance(found[0]))
+        yield event.plain_result(self.client.fmt_instance(found[0]))
 
     # /gsm start <名称/ID> —— 启动实例
     @gsm.command("start")
@@ -186,17 +120,13 @@ class Gsm3Plugin(Star):
     # ─────────────── 内部控制逻辑 ───────────────
 
     async def _control(
-        self,
-        event: AstrMessageEvent,
-        name: str,
-        action: str,
-        use_action_endpoint: bool = False,
+        self, event: AstrMessageEvent, name: str, action: str, use_action_endpoint: bool = False
     ):
         """执行 start/stop/restart 的公共逻辑"""
-        label, method, path_tmpl = ACTION_MAP[action]
+        label = ACTION_MAP[action][0]
 
         # 找到实例（支持 ID 精确或名称模糊）
-        found, err = await self._find_instances(name)
+        found, err = await self.client.find_instances(name)
         if err:
             yield event.plain_result(f"❌ {err}")
             return
@@ -219,21 +149,11 @@ class Gsm3Plugin(Star):
             yield event.plain_result(f"ℹ️ 「{inst.get('name')}」已经停止了。")
             return
 
-        if use_action_endpoint:
-            path = f"/api/external/instances/{inst_id}/action"
-            payload = {"json": {"action": action}}
+        result = await self.client.control(inst_id, action, use_action_endpoint)
+        if result.get("success"):
+            yield event.plain_result(f"✅ {result['message']}")
         else:
-            path = path_tmpl.format(id=inst_id)
-            payload = {}
-
-        data = await self._request(method, path, **payload)
-        if data.get("success"):
-            msg = data.get("message") or f"{label}成功"
-            yield event.plain_result(f"✅ {msg}")
-        else:
-            yield event.plain_result(
-                f"❌ {label}失败: {data.get('message', data.get('error', '未知错误'))}"
-            )
+            yield event.plain_result(f"❌ {label}失败: {result['message']}")
 
     # ─────────────── 生命周期 ───────────────
 

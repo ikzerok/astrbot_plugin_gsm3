@@ -2,6 +2,11 @@
 
 ![logo](logo.png)
 
+[![Version](https://img.shields.io/badge/Version-v1.1.0-1D80D9?style=flat-square)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/License-MIT-97CA00?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![AstrBot](https://img.shields.io/badge/AstrBot-Compatible-00BFA5?style=flat-square&logo=robot&logoColor=white)](https://github.com/AstrBotDevs/AstrBot)
+
 AstrBot 插件：管理 [GSManager3](https://github.com/nichacker/GSManager3) 游戏服务器面板上的实例。支持查看实例列表/状态、启动、停止、重启。
 
 ## 功能
@@ -53,13 +58,36 @@ docker restart astrbot
 | `/api/external/instances/:id/restart` | POST | 重启 |
 | `/api/external/instances/:id/action` | POST | 通用操作（body: `{"action":"start\|stop\|restart"}`） |
 
+## 目录结构
+
+```
+astrbot_plugin_gsm3/
+├── main.py            # 插件入口（@register 注册，指令组）
+├── core/
+│   ├── __init__.py    # 核心模块导出
+│   └── api.py         # GSM3 API 客户端（请求封装、实例查找、格式化）
+├── tests/             # pytest 单元测试
+├── metadata.yaml      # 插件元数据
+├── _conf_schema.json  # WebUI 可视化配置
+├── pyproject.toml     # 项目声明 + ruff/pytest 配置
+├── requirements.txt   # 运行依赖
+├── CHANGELOG.md       # 更新日志
+├── LICENSE            # MIT
+└── README.md
+```
+
 ## 开发
 
 ```bash
-# 格式化（提交前请运行）
+# 安装开发依赖
+uv sync --extra dev  # 或 pip install -e ".[dev]"
+
+# 格式化与检查（提交前请运行）
 ruff format .
-# lint
 ruff check .
+
+# 测试
+pytest
 ```
 
 ## License

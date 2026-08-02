@@ -1,0 +1,28 @@
+# 更新日志
+
+## [v1.1.0] - 2026-08-03
+
+### 重构
+- 仿照 jm_cosmos 插件架构重构：`@register` 装饰器注册、业务逻辑拆分为 `core/` 包（API 客户端与格式化）
+- 新增 `pyproject.toml` 项目声明（name/version/dependencies）
+- 新增 `pytest` 单元测试
+
+### 安全
+- 移除内网地址默认值（`192.168.1.221:3001` → `127.0.0.1:3001`），避免公开仓库暴露内网拓扑
+- 重写 git 历史为单个干净 commit，确保历史中无内网地址
+
+## [v1.0.0] - 2026-08-03
+
+### 功能
+- `/gsm list` — 列出所有实例及运行状态
+- `/gsm status [名称/ID]` — 查看实例详情（不填参数则列出全部）
+- `/gsm start <名称/ID>` — 启动实例（仅管理员）
+- `/gsm stop <名称/ID>` — 停止实例（仅管理员）
+- `/gsm restart <名称/ID>` — 重启实例（仅管理员）
+- `/gsm action <名称/ID> <start|stop|restart>` — 调用底层 action 接口（仅管理员）
+
+### 特性
+- 实例支持精确 ID 或名称模糊匹配
+- 管理员权限控制
+- WebUI 可视化配置（base_url / api_key / timeout）
+- 基于 httpx 异步请求，全异常兜底防崩溃
