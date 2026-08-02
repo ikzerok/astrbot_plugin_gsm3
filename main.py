@@ -12,7 +12,7 @@ from astrbot.core.star.filter.command import GreedyStr
 from .core import ACTION_MAP, STATUS_ICON, GSM3Client
 
 PLUGIN_NAME = "gsm3_manager"
-PLUGIN_VERSION = "1.1.0"
+PLUGIN_VERSION = "1.2.0"
 
 
 @register(
@@ -82,28 +82,24 @@ class Gsm3Plugin(Star):
 
     # /gsm start <名称/ID> —— 启动实例
     @gsm.command("start")
-    @filter.permission_type(filter.PermissionType.ADMIN)
     async def gsm_start(self, event: AstrMessageEvent, name: GreedyStr):
         async for result in self._control(event, name, "start"):
             yield result
 
     # /gsm stop <名称/ID> —— 停止实例
     @gsm.command("stop")
-    @filter.permission_type(filter.PermissionType.ADMIN)
     async def gsm_stop(self, event: AstrMessageEvent, name: GreedyStr):
         async for result in self._control(event, name, "stop"):
             yield result
 
     # /gsm restart <名称/ID> —— 重启实例
     @gsm.command("restart")
-    @filter.permission_type(filter.PermissionType.ADMIN)
     async def gsm_restart(self, event: AstrMessageEvent, name: GreedyStr):
         async for result in self._control(event, name, "restart"):
             yield result
 
     # /gsm action <名称/ID> <start|stop|restart> —— 底层 action 接口
     @gsm.command("action")
-    @filter.permission_type(filter.PermissionType.ADMIN)
     async def gsm_action(self, event: AstrMessageEvent, args: GreedyStr):
         parts = args.strip().split()
         if len(parts) < 2:

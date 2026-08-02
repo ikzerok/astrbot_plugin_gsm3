@@ -2,7 +2,7 @@
 
 ![logo](logo.png)
 
-[![Version](https://img.shields.io/badge/Version-v1.1.0-1D80D9?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-v1.2.0-1D80D9?style=flat-square)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-97CA00?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![AstrBot](https://img.shields.io/badge/AstrBot-Compatible-00BFA5?style=flat-square&logo=robot&logoColor=white)](https://github.com/AstrBotDevs/AstrBot)
@@ -13,10 +13,10 @@ AstrBot 插件：管理 [GSManager3](https://github.com/nichacker/GSManager3) �
 
 - `/gsm list` — 列出所有实例及运行状态
 - `/gsm status [名称/ID]` — 查看实例详情（不填参数则列出全部）
-- `/gsm start <名称/ID>` — 启动实例（仅管理员）
-- `/gsm stop <名称/ID>` — 停止实例（仅管理员）
-- `/gsm restart <名称/ID>` — 重启实例（仅管理员）
-- `/gsm action <名称/ID> <start|stop|restart>` — 调用底层 action 接口（仅管理员）
+- `/gsm start <名称/ID>` — 启动实例
+- `/gsm stop <名称/ID>` — 停止实例
+- `/gsm restart <名称/ID>` — 重启实例
+- `/gsm action <名称/ID> <start|stop|restart>` — 调用底层 action 接口
 
 实例支持**精确 ID** 或**名称模糊匹配**（如 `/gsm stop 泰拉瑞亚`），匹配到多个时会提示你使用更精确的名称。
 
