@@ -1,0 +1,20 @@
+{
+  "base_url": {
+    "description": "GSM3 API 地址",
+    "type": "string",
+    "default": "http://127.0.0.1:3001",
+    "hint": "GSManager3 外部 API 的 Base URL，例如 http://127.0.0.1:3001"
+  },
+  "api_key": {
+    "description": "GSM3 API Key",
+    "type": "string",
+    "default": "",
+    "hint": "访问 /api/external 接口所需的 Bearer Token",
+    "obvious_hint": true
+  },
+  "timeout": {
+    "description": "请求超时时间（秒）",
+    "type": "int",
+    "default": 10
+  }
+}
